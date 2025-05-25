@@ -8,39 +8,52 @@ use Twilio\Rest\Client;
 class BulkSmsController extends Controller
 {
     public function send(Request $request)
-    {
-        // make sure user submitted numbers and a message
-        $request->validate([
-            'numbers' => 'required|string',
-            'message' => 'required|string|max:1600',
-        ]);
+{
+    $request->validate([
+        'message' => 'required|string|max:1600',
+        'csv_file' => 'nullable|file|mimes:csv,txt',
+        'numbers' => 'nullable|string',
+    ]);
 
-        // grab Twilio credentials from .env
-        $sid    = env('TWILIO_SID');
-        $token  = env('TWILIO_AUTH_TOKEN');
-        $from   = env('TWILIO_PHONE_NUMBER');
+    $sid    = env('TWILIO_SID');
+    $token  = env('TWILIO_AUTH_TOKEN');
+    $from   = env('TWILIO_PHONE_NUMBER');
+    $twilio = new Client($sid, $token);
 
-        // start Twilio client
-        $twilio = new Client($sid, $token);
+    $recipients = [];
 
-        // split phone numbers by comma
-        $numbers = explode(',', $request->input('numbers'));
-        $message = $request->input('message');
-
-        // send the message to each number
-        foreach ($numbers as $to) {
-            try {
-                $twilio->messages->create(trim($to), [
-                    'from' => $from,
-                    'body' => $message,
-                ]);
-            } catch (\Exception $e) {
-                // optional: log the failure if needed
-                // Log::error("Failed to send to $to: " . $e->getMessage());
-            }
+    // use CSV if uploaded
+    if ($request->hasFile('csv_file')) {
+        $file = $request->file('csv_file');
+        $handle = fopen($file->getRealPath(), 'r');
+        while (($line = fgetcsv($handle)) !== false) {
+            $recipients[] = trim($line[0]);
         }
-
-        // redirect back with a flash message
-        return back()->with('success', 'Messages queued for delivery.');
+        fclose($handle);
     }
+    // otherwise, use typed-in numbers
+    elseif ($request->filled('numbers')) {
+        $recipients = array_map('trim', explode(',', $request->input('numbers')));
+    }
+
+    // if nothing provided, don't send anything
+    if (empty($recipients)) {
+        return back()->with('success', 'No valid numbers provided.');
+    }
+
+    // loop through and send
+    foreach ($recipients as $to) {
+        try {
+            $twilio->messages->create($to, [
+                'from' => $from,
+                'body' => $request->input('message'),
+            ]);
+        } catch (\Exception $e) {
+            // optional: log or collect errors
+        }
+    }
+
+    return back()->with('success', 'Messages queued for delivery.');
+}
+
 }
