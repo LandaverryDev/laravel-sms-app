@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendSmsJob;
 use Illuminate\Http\Request;
 use Twilio\Rest\Client;
 
@@ -43,16 +44,10 @@ class BulkSmsController extends Controller
 
     // loop through and send
     foreach ($recipients as $to) {
-        try {
-            $twilio->messages->create($to, [
-                'from' => $from,
-                'body' => $request->input('message'),
-            ]);
-        } catch (\Exception $e) {
-            // optional: log or collect errors
-        }
+        // send each SMS as a job to the queue instead of live
+        dispatch(new SendSmsJob($to, $request->input('message')));
     }
-
+    
     return back()->with('success', 'Messages queued for delivery.');
 }
 
