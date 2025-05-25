@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SmsController;
+use App\Http\Controllers\BulkSmsController;
 
 // still keeping the default Laravel welcome page
 Route::get('/', function () {
@@ -15,3 +16,11 @@ Route::get('/send-sms', function () {
 
 // handles the form submit and actually sends the text
 Route::post('/send-sms', [SmsController::class, 'send'])->name('sms.send');
+
+// shows the bulk SMS form
+Route::get('/bulk-sms', function () {
+    return view('bulk-sms');
+});
+
+// handles the bulk form submit
+Route::post('/bulk-sms', [BulkSmsController::class, 'send'])->name('bulk-sms.send');
