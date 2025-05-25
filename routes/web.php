@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SmsController;
 use App\Http\Controllers\BulkSmsController;
+use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\TwilioWebhookController;
 
 // still keeping the default Laravel welcome page
 Route::get('/', function () {
@@ -24,3 +26,8 @@ Route::get('/bulk-sms', function () {
 
 // handles the bulk form submit
 Route::post('/bulk-sms', [BulkSmsController::class, 'send'])->name('bulk-sms.send');
+
+Route::post('/twilio/status', [WebhookController::class, 'handleStatus']);
+
+// Twilio delivery status webhook route
+Route::post('/twilio/status', [TwilioWebhookController::class, 'handleStatus']);
