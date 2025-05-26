@@ -5,6 +5,8 @@ use App\Http\Controllers\SmsController;
 use App\Http\Controllers\BulkSmsController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\TwilioWebhookController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OptOutController;
 
 // still keeping the default Laravel welcome page
 Route::get('/', function () {
@@ -29,3 +31,10 @@ Route::post('/bulk-sms', [BulkSmsController::class, 'send'])->name('bulk-sms.sen
 
 // Twilio delivery status webhook route
 Route::post('/twilio/status', [TwilioWebhookController::class, 'handleStatus']);
+
+// shows the dashboard with all contacts and their message history
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+Route::get('/opt-outs', [OptOutController::class, 'index'])->name('opt-outs.index');
+Route::post('/opt-outs', [OptOutController::class, 'store'])->name('opt-outs.store');
+Route::delete('/opt-outs/{id}', [OptOutController::class, 'destroy'])->name('opt-outs.destroy');
