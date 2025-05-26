@@ -42,22 +42,21 @@ class SendSmsJob implements ShouldQueue
         ['name' => null]
     );
 
-    try {
-        $twilioMessage = $twilio->messages->create($this->to, [
-            'from' => env('TWILIO_PHONE_NUMBER'),
-            'body' => $this->message,
-        ]);
+    // Add opt-out instructions to message
+    $messageWithOptOut = $this->message . ' Reply STOP to opt out.';
 
-        // Only create message if sent successfully
-        $contact->messages()->create([
-            'body' => $this->message,
-            'status' => 'queued',
-            'twilio_sid' => $twilioMessage->sid ?? null,
-        ]);
+    $twilioMessage = $twilio->messages->create($this->to, [
+        'from' => env('TWILIO_PHONE_NUMBER'),
+        'body' => $messageWithOptOut,
+    ]);
 
-    } catch (\Exception $e) {
-        \Log::error("Failed to send SMS to {$this->to}: " . $e->getMessage());
-    }
+    // Store only original message in DB (not the appended text)
+    $contact->messages()->create([
+        'body' => $this->message,
+        'status' => 'queued',
+        'twilio_sid' => $twilioMessage->sid ?? null,
+    ]);
 }
+
 
 }
