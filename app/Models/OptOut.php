@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class OptOut extends Model
 {
-    //
+    protected $fillable = ['phone_number'];
 }
