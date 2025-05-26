@@ -7,6 +7,7 @@ use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\TwilioWebhookController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OptOutController;
+use App\Http\Controllers\CampaignController;
 
 // still keeping the default Laravel welcome page
 Route::get('/', function () {
@@ -38,3 +39,6 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 Route::get('/opt-outs', [OptOutController::class, 'index'])->name('opt-outs.index');
 Route::post('/opt-outs', [OptOutController::class, 'store'])->name('opt-outs.store');
 Route::delete('/opt-outs/{id}', [OptOutController::class, 'destroy'])->name('opt-outs.destroy');
+
+Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
+Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
