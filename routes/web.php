@@ -27,7 +27,5 @@ Route::get('/bulk-sms', function () {
 // handles the bulk form submit
 Route::post('/bulk-sms', [BulkSmsController::class, 'send'])->name('bulk-sms.send');
 
-Route::post('/twilio/status', [WebhookController::class, 'handleStatus']);
-
 // Twilio delivery status webhook route
 Route::post('/twilio/status', [TwilioWebhookController::class, 'handleStatus']);
