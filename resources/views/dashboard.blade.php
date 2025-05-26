@@ -56,8 +56,12 @@
                             <div class="mb-2">
                                 <span class="badge bg-{{ $badgeClass }}">{{ ucfirst($message->status) }}</span>
                                 <div><strong>Text:</strong> {{ $message->body }}</div>
+                                @if($message->campaign)
+                                    <small class="text-muted">Campaign: {{ $message->campaign->name }}</small>
+                                @endif
                             </div>
                         @endforeach
+
                         </td>
                     </tr>
                 @endforeach

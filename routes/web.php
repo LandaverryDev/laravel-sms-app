@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OptOutController;
 use App\Http\Controllers\CampaignController;
 
+
 // still keeping the default Laravel welcome page
 Route::get('/', function () {
     return view('welcome');

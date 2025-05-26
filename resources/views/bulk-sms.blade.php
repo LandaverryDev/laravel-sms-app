@@ -27,6 +27,17 @@
             <input type="file" class="form-control" name="csv_file" id="csv_file" accept=".csv">
         </div>
 
+        <div class="mb-3">
+    <label for="campaign_id" class="form-label">Campaign</label>
+    <select name="campaign_id" id="campaign_id" class="form-select">
+        <option value="">— None —</option>
+        @foreach(\App\Models\Campaign::all() as $campaign)
+            <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
+        @endforeach
+    </select>
+</div>
+
+
         {{-- Message input --}}
         <div class="mb-3">
             <label for="message" class="form-label">Message</label>

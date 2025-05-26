@@ -18,17 +18,22 @@ class SendSmsJob implements ShouldQueue
 
     protected $to;
     protected $message;
+    protected $campaignId;
 
     // job constructor — takes a phone number and message content
-    public function __construct($to, $message)
+    
+    public function __construct($to, $message, $campaignId = null)
     {
         $this->to = $to;
         $this->message = $message;
+        $this->campaignId = $campaignId;
     }
 
     // what the job does when it's picked up by the worker
     public function handle()
 {
+    \Log::info("Campaign ID received in job: " . ($this->campaignId ?? 'null'));
+
     // Check if this number is opted out
     if (OptOut::where('phone_number', $this->to)->exists()) {
         \Log::info("SMS to {$this->to} skipped — number is opted out.");
@@ -55,6 +60,7 @@ class SendSmsJob implements ShouldQueue
         'body' => $this->message,
         'status' => 'queued',
         'twilio_sid' => $twilioMessage->sid ?? null,
+        'campaign_id' => $this->campaignId,
     ]);
 }
 

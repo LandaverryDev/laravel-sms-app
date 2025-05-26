@@ -10,7 +10,8 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
 {
-    $query = Contact::with('messages');
+    
+    $query = Contact::with(['messages.campaign']); 
 
     // Filter by phone number
     if ($request->filled('phone')) {

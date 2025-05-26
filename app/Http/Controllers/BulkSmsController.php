@@ -42,12 +42,13 @@ class BulkSmsController extends Controller
         return back()->with('success', 'No valid numbers provided.');
     }
 
+    $campaignId = $request->input('campaign_id'); // can be null
     // loop through and send
     foreach ($recipients as $to) {
-        // send each SMS as a job to the queue instead of live
-        dispatch(new SendSmsJob($to, $request->input('message')));
+        dispatch(new SendSmsJob($to, $request->input('message'), $campaignId));
     }
-    
+
+
     return back()->with('success', 'Messages queued for delivery.');
 }
 
